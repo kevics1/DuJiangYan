@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三维古迹点地图</title>
+  <link rel="stylesheet" href="style1.css">
+  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="style_donghua.css">
+  <script src="https://api.tianditu.gov.cn/cdn/demo/sanwei/static/cesium/Cesium.js"></script>
+  <script src="https://api.tianditu.gov.cn/cdn/plugins/cesium/Cesium_ext_min.js"></script>
+  <link rel="stylesheet" href="https://api.tianditu.gov.cn/cdn/demo/sanwei/static/cesium/Widgets/widgets.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .layer-control {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .layer-control h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .layer-control .form-check {
+      margin-bottom: 5px;
+    }
+    .elevation-legend {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+    .elevation-legend h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .elevation-gradient {
+      width: 200px;
+      height: 20px;
+      background: linear-gradient(to right, 
+        #313695, #4575b4, #74add1, #abd9e9, 
+        #e0f3f8, #ffffbf, #fee090, #fdae61, 
+        #f46d43, #d73027, #a50026);
+      border-radius: 3px;
+      margin-bottom: 5px;
+    }
+    .elevation-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  
+  <!-- 图层控制面板 -->
+  <div class="layer-control">
+    <h5>图层控制</h5>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="mapLayer" id="baseMapLayer" checked>
+      <label class="form-check-label" for="baseMapLayer">基础地图</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="mapLayer" id="elevationLayer">
+      <label class="form-check-label" for="elevationLayer">高程渲染</label>
+    </div>
+  </div>
+  
+  <!-- 高程图例 -->
+  <div class="elevation-legend" id="elevationLegend">
+    <h5>高程图例 (米)</h5>
+    <div class="elevation-gradient"></div>
+    <div class="elevation-labels">
+      <span>0</span>
+      <span>1000</span>
+      <span>2000</span>
+      <span>3000</span>
+      <span>4000</span>
+      <span>5000</span>
+      <span>6000</span>
+    </div>
+  </div>
+  
+  <div id="photo-container">
+    <a href="https://news.qq.com/rain/a/20210930A09DOQ00" target="_blank" class="photo-box">
+      <img src="images_lianjie/都江堰.png" alt="Photo 1">
+    </a>
+    <a href="https://baijiahao.baidu.com/s?id=1633387396978852732" target="_blank" class="photo-box">
+      <img src="images_lianjie/二王庙.png" alt="Photo 2">
+    </a>
+    <a href="https://www.meipian.cn/xcdgk83" target="_blank" class="photo-box">
+      <img src="images_lianjie/飞沙堰.png" alt="Photo 3">
+    </a>
+    <a href="https://baijiahao.baidu.com/s?id=1824029635941561585" target="_blank" class="photo-box">
+      <img src="images_lianjie/卧铁.png" alt="Photo 4">
+    </a>
+    <a href="https://www.gstv.com.cn/ymkgs/7417C78A6EC847AEAEBC39076F983A98.jhtml" target="_blank" class="photo-box">
+      <img src="images_lianjie/鱼雷管.png" alt="Photo 5">
+    </a>
+  </div>
+
+  <div class="title-container">
+    <h1 class="title">都江堰3D地图</h1>
+  </div>
+
+  <button class="animation-button" id="playButton">播放动画</button>
+  <div class="video-container" id="videoContainer">
+    <video id="myVideo" controls>
+      <source src="vido/dujiangyan.mp4" type="video/mp4">
+      您的浏览器不支持 HTML5 视频。
+    </video>
+  </div>
+
+  <div class="modal fade" id="infoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body row">
+          <div class="col-md-6">
+            <div id="imageCarousel" class="carousel slide" data-bs-ride="false">
+              <div class="carousel-inner" id="carouselInner"></div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6" id="textContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <script src="script3.js"></script>
+  <script src="script_donghua.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const playButton = document.getElementById('playButton');
+      const videoContainer = document.getElementById('videoContainer');
+      const myVideo = document.getElementById('myVideo');
+      
+      playButton.addEventListener('click', function() {
+        // 添加缩放效果
+        playButton.classList.add('active');
+        
+        // 200ms后移除缩放效果
+        setTimeout(() => {
+          playButton.classList.remove('active');
+        }, 200);
+        
+        // 显示视频容器
+        videoContainer.style.display = 'block';
+        
+        // 设置视频容器为最前面
+        videoContainer.style.zIndex = '9999';
+        
+        // 播放视频
+        myVideo.play();
+        
+        // 视频播放完成后隐藏视频容器
+        myVideo.addEventListener('ended', function() {
+          videoContainer.style.display = 'none';
+        });
+        
+        console.log('播放动画按钮被点击');
+      });
+    });
+  </script>
+</body>
+</html>

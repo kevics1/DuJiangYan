@@ -1,0 +1,18 @@
+{
+"type": "FeatureCollection",
+"name": "古迹点",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 1, "name": "宝瓶口" }, "geometry": { "type": "Point", "coordinates": [ 103.610753493000061, 31.001155753000035 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 3, "name": "二王庙" }, "geometry": { "type": "Point", "coordinates": [ 103.608197071000063, 31.008147554000061 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 4, "name": "飞沙堰" }, "geometry": { "type": "Point", "coordinates": [ 103.609187492000046, 31.001332004000062 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 6, "name": "奎光塔" }, "geometry": { "type": "Point", "coordinates": [ 103.616752275000067, 30.989493115000073 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 8, "name": "秦堰楼" }, "geometry": { "type": "Point", "coordinates": [ 103.60751921800005, 31.00927966200004 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 9, "name": "卧铁" }, "geometry": { "type": "Point", "coordinates": [ 103.612281463000045, 30.998777157000063 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 10, "name": "仰天窝廊" }, "geometry": { "type": "Point", "coordinates": [ 103.61785612400007, 30.998484721000068 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 11, "name": "玉垒关" }, "geometry": { "type": "Point", "coordinates": [ 103.609518510000044, 31.004231374000028 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": null, "name": "城隍庙" }, "geometry": { "type": "Point", "coordinates": [ 103.613464895094822, 31.002986510965215 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": null, "name": "伏龙观" }, "geometry": { "type": "Point", "coordinates": [ 103.610592754131829, 31.000794532555375 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": null, "name": "离堆公园" }, "geometry": { "type": "Point", "coordinates": [ 103.611047968544497, 30.998421873471521 ] } }
+]
+}

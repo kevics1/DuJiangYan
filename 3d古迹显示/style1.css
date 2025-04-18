@@ -1,0 +1,84 @@
+ /* 修改模态框容器样式 */
+ .modal-dialog {
+  max-width: 90vw;  /* 最大为视口宽度的90% */
+  width: auto;      /* 宽度自适应内容 */
+  min-width: 300px; /* 最小宽度保障可读性 */
+}
+
+/* 图片容器样式 */
+.carousel-container {
+  width: 50vw;       /* 初始占视口宽度50% */
+  max-width: 800px;  /* 图片区域最大宽度 */
+  min-width: 300px;  /* 图片区域最小宽度 */
+  flex-shrink: 0;    /* 禁止缩小 */
+}
+
+/* 图片样式 */
+.carousel-item img {
+  width: 100%;       /* 充满容器宽度 */
+  height: auto;      /* 高度自动保持比例 */
+  max-height: 70vh;  /* 最大高度限制 */
+  object-fit: contain;
+}
+
+/* 文字容器样式 */
+#textContent {
+  flex: 1;
+  min-width: 300px;  /* 最小宽度保障可读性 */
+  max-width: 600px;  /* 最大文字宽度 */
+  overflow-y: auto;
+  padding: 0 15px;
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+  .modal-body {
+    flex-direction: column;
+  }
+  .carousel-container {
+    width: 100%;
+    max-width: none;
+  }
+  #textContent {
+    max-width: none;
+    height: 40vh;
+  }
+}
+
+/* 图片容器 */
+.image-container {
+  width: 100%;
+  height: 400px; /* 固定高度 */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+/* 图片自适应 */
+.scaled-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 完整显示图片 */
+  transition: transform 0.3s ease;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .image-container {
+    height: 300px;
+  }
+}
+
+/* 统一文本容器高度 */
+#textContent {
+  height: 400px;
+  overflow-y: auto;
+}
+
+/* 移除默认间距 */
+.carousel-inner {
+  border-radius: 8px;
+  overflow: hidden;
+}
