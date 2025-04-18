@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="renderer" content="webkit" />
+    <title>古都江堰工程可视化交互平台</title>
+    <meta name="keywords" content="都江堰遗产保护管理办公室,世遗办,扬州世遗办" />
+    <meta name="description" content="都江堰遗产保护管理办公室，前身为都江堰联合申报世界文化遗产办公室，主要职能为协调、组织、实施都江堰全线遗产保护管理工作。" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link href="/skin/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/skin/css/swiper.min.css" />
+    <link rel="stylesheet" href="/skin/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <script language="javascript" src="/skin/js/swiper.min.js"></script>
+    <script src="/skin/js/jquery.js"></script>
+    <script src="/skin/js/jquery.superslide.2.1.3.js"></script>
+    <script src="/skin/js/js.js"></script>
+    <link rel="stylesheet" href="/skin/css/water-sculpture.css">
+    <script src="/skin/js/water-sculpture.js"></script>
+</head>
+
+<body>
+    <!-- 完整保留原始内容 -->
+    <div id="gotop"><span>回到顶部</span></div>
+    <div id="header">
+        <dl id="logosearch">
+            <dt>
+                <img id="logo" src="/static/upload/image/logo/mainlogo.png" width="" height="80" />
+            </dt>
+            <dd>
+                <form id="searchForm">
+                    <input type="text" name="keyword" id="sipt" placeholder="请输入关键词" />
+                    <input type="submit" id="sbtn" value="搜索" />
+                </form>
+                <img src="/skin/images/open.png" width="21" height="21" class="mobNav" xf="/skin/images/close.png" />
+            </dd>
+        </dl>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // 阻止默认提交行为
+            const keyword = document.getElementById('sipt').value.trim();
+            if (keyword) {
+                // 跳转到结果页面并传递关键词
+                window.location.href = `results.html?keyword=${encodeURIComponent(keyword)}`;
+            }
+        });
+    </script>
+    
+    <div id="nav">
+        <ul>
+            <li><a href="home.html" class="navlink ztzt curnav">千载堰门·云启</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="2d.html" class="navlink ztzt ">舆图绘世</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="3d古迹显示/index2.html" target="_blank" class="navlink ztzt">浮空幻境</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="story.html" class="navlink ztzt ">青史凿痕</a></li>
+        </ul>
+    </div>
+    <!-- 视频和功能介绍 -->
+    <div id="hero-video-container" style="position: relative; overflow: hidden;">
+        <!-- 视频 -->
+        <video id="hero-video" autoplay muted loop style="width: 100%; height: auto;">
+            <source src="skin/images/素材_01.mp4" type="video/mp4">
+        </video>
+        <!-- 半透明黑膜 -->
+        <div id="video-overlay" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;">
+        </div>
+        <!-- 按钮 -->
+        <a href="#core-features" id="hero-button">了解核心功能</a>
+        <!-- 居中 Logo -->
+        <img id="center-logo" src="skin/images/素材_02.png" alt="Logo" style="
+            position: absolute;
+            top: 40%;
+            left: 48%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            width: 1000px; /* 调整 Logo 宽度 */
+            height: auto;">
+        <!-- 功能介绍 -->
+        <div id="features" style="
+            position: absolute;
+            bottom: 20%;
+            left: 58%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            font-size: 14px;
+            color: white;
+            z-index: 2;">
+        <div class="feature-item" style="display: flex; align-items: center; cursor: pointer; flex: 1; position: relative;">
+            <span>都江堰工程</span>
+            <div class="feature-description" style="
+                display: none;
+                margin-top: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                border-radius: 5px;">
+                都江堰是中国古代水利工程的杰出代表，至今仍在发挥作用。
+            </div>
+        </div>
+        <div class="feature-item" style="display: flex; align-items: center; cursor: pointer; flex: 1; position: relative;">
+            <span>二维交互式地图</span>
+            <div class="feature-description" style="
+                display: none;
+                margin-top: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                border-radius: 5px;">
+                通过二维地图探索都江堰的历史与地理信息。
+            </div>
+        </div>
+        <div class="feature-item" style="display: flex; align-items: center; cursor: pointer; flex: 1; position: relative;">
+            <span>三维重现</span>
+            <div class="feature-description" style="
+                display: none;
+                margin-top: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                border-radius: 5px;">
+                利用三维技术重现都江堰的壮丽景观。
+            </div>
+        </div>
+        <div class="feature-item" style="display: flex; align-items: center; cursor: pointer; flex: 1; position: relative;">
+            <span>背景故事</span>
+            <div class="feature-description" style="
+                display: none;
+                margin-top: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                border-radius: 5px;">
+                了解都江堰的历史背景与文化意义。
+            </div>
+        </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 功能点点击事件
+        const featureItems = document.querySelectorAll('.feature-item');
+
+        featureItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const description = item.querySelector('.feature-description');
+                const isVisible = description.style.display === 'block';
+                // 隐藏所有下拉标签
+                document.querySelectorAll('.feature-description').forEach(desc => {
+                    desc.style.display = 'none';
+                });
+                // 显示当前点击的下拉标签
+                if (!isVisible) {
+                    description.style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+    <div id="target-section" style="text-align: center; margin: 40px 0;">
+        <!-- 大字 -->
+        <h1 style="
+            font-size: 36px; 
+            font-weight: bold; 
+            color: #333; 
+            margin-bottom: 10px; 
+            font-family: 'Microsoft YaHei', sans-serif;">
+            都江堰介绍
+        </h1>
+        <!-- 小字 -->
+        <p style="
+            font-size: 16px; 
+            color: #666; 
+            line-height: 1.8; 
+            font-family: 'Microsoft YaHei', sans-serif;">
+            都江堰，中华智慧的结晶，千年不息的水利奇迹
+        </p>
+    </div>
+
+    <div id="firstbody">
+        <div id="fbLeft" class="swiper-container">
+            <div class="swiper-wrapper">
+                <!-- 第一个轮播项 -->
+                <div class="swiper-slide">
+                    <div class="xftitle"><a style="color:#FFF" >都江堰枢纽，山水相依，古韵今风</a></div>
+                    <img src="skin\images\素材_03.jpg" width="660" height="360" title="都江堰枢纽，山水相依，古韵今风" /></a>
+                </div>
+                <!-- 第二个轮播项 -->
+                <div class="swiper-slide">
+                    <div class="xftitle"><a style="color:#FFF" >河道蜿蜒，村落点缀，自然与工程交融</a></div>
+                    <img src="skin\images\素材_04.jpg" width="660" height="360" title="河道蜿蜒，村落点缀，自然与工程交融" /></a>
+                </div>
+                <!-- 第三个轮播项 -->
+                <div class="swiper-slide">
+                    <div class="xftitle"><a style="color:#FFF" >鱼嘴分水，匠心独运，千年智慧现于斯！</a></div>
+                    <img src="skin\images\素材_05.jpg" width="660" height="360" title="鱼嘴分水，匠心独运，千年智慧现于斯！" /></a>
+                </div>
+                <div class="swiper-slide">
+                    <div class="xftitle"><a style="color:#FFF">俯瞰都江堰，绿拥河道，工程壮伟</a></div>
+                    <img src="skin\images\素材_06.jpg" width="660" height="360" title="俯瞰都江堰，绿拥河道，工程壮伟" /></a>
+                </div>
+                <div class="swiper-slide">
+                    <div class="xftitle"><a style="color:#FFF" >城水相连，千年古堰，惠泽千代。</a></div>
+                    <img src="skin\images\素材_07.jpg" width="660" height="360" title="城水相连，千年古堰，惠泽千代。" /></a>
+                </div>
+            </div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+
+        <dl id="fbRight">
+            <dt class="ztzt"><a href="https://baike.baidu.com/item/%E9%83%BD%E6%B1%9F%E5%A0%B0/122963" target="_blank">MORE</a>天府<span>之</span>源</dt>
+            <dd class="Marquee-top">
+                <div class="hd"></div>
+                <div class="bd">
+                    <p>　　都江堰是中国古代著名的水利工程，位于四川省成都市都江堰市。它由李冰父子主持修建，已有两千多年的历史。都江堰以无坝引水为特色，至今仍在发挥灌溉、防洪等作用，被誉为“天府之国”的生命之源。</p>
+                    <p>　　都江堰工程主要由<span class="highlight">鱼嘴分水堤</span>、
+                        <span class="highlight">飞沙堰溢洪道</span>、
+                        <span class="highlight">宝瓶口进水口</span>三大主体部分构成。其原理为：鱼嘴分水堤呈 “鱼嘴” 状伸入岷江江心，将江水分为内江（用于灌溉）和外江（用于泄洪），利用地形和水流规律实现 “  <span class="highlight">四六分水</span>、”—— 枯水期引六成江水入内江保证灌溉，洪水期分六成江水至外江避免涝灾；飞沙堰位于内江末端，兼具溢洪和排沙功能，当内江水量超过宝瓶口接纳能力时，多余洪水从堰顶溢出返回外江，同时借助岷江弯道水流的离心力，将泥沙通过堰口排向外江，实现 “  <span class="highlight">二八分沙</span>”；宝瓶口是人工开凿的狭窄进水口，控制内江水流速度和流量，形成稳定的引水通道，三者配合形成 “分洪以减灾，引水以灌田” 的自流灌溉系统，实现了防洪、灌溉、航运的有机统一，至今仍发挥着重要作用。</p>
+                </div>
+            </dd>
+        </dl>
+    </div>
+
+    <div class="ad"><img src="skin\images\素材_08.jpg"/></div>
+
+    <div id="secondbody">
+        <dl id="sbLeft">
+            <dt class="iTitle ztzt"><a href="https://www.sohu.com/a/838250253_121239079" target="_blank">MORE</a>千年<span>古</span>堰</dt>
+            <p>
+                <a href="https://www.sohu.com/a/838250253_121239079" target="_blank"><img src="skin/images/素材_09.jpg" class="styled-image" title="千年古堰" /></a>
+            </p>
+            <p>
+                　　作为全球唯一留存且仍在高效运作的古代水利工程，都江堰跨越 2270 余年时空，不仅以 “乘势利导、因时制宜” 的生态理念，成为 “人与自然和谐共生” 的文明典范，更以 “深淘滩、低作堰” 的治堰准则，沉淀为中华民族尊重自然、利用自然的智慧象征。2000 年，它被列入<span class="highlight">世界文化遗产</span>，被誉为 “水文化的摇篮”—— 千年之前的滔滔岷江水，至今仍在古堰的脉络中奔涌，诉说着人类工程与自然规律的永恒对话。
+            </p>
+        </dl>
+
+        <dl id="sbRight">
+            <dt class="iTitle ztzt"><a href="https://news.qq.com/rain/a/20240330A04ITB00" target="_blank">MORE</a>水润<span>天</span>府</dt>
+            <p>
+                　　作为 “天府之国” 的生命之源，都江堰以无坝引水的智慧，将桀骜的岷江水化为润泽万物的 “柔性力量”：鱼嘴分水堤劈开岷江，使 60% 的水量流入内江灌溉农田，40% 经外江泄洪排沙；飞沙堰与宝瓶口默契配合，既锁住泥沙守护渠道，又在旱季精准补水，让成都平原 “水旱从人，不知饥馑”（《华阳国志》）。这一延续 2270 年的水利系统，至今滋养着超<span class="highlight"> 1130 万亩良田</span>，支撑四川<span class="highlight"> 1/3 的粮食产量</span> ，更通过年均 <span class="highlight">300 亿立方米的生态补水</span>，维系着青城山 — 都江堰世界遗产地的生物多样性，成为长江上游最重要的 “绿色水塔”。
+            </p>
+            <p>
+                　　“水润” 二字，既具象于都江堰 “分洪、灌溉、航运” 的立体功能，更升华为巴蜀文明 “因水而兴、因水而荣” 的精神隐喻。从李冰 “凿离堆、穿二江” 的开拓，到历代 “深淘滩、低作堰” 的守护，水的流动不仅塑造了 “窗含西岭千秋雪” 的诗意景观，更孕育了 “上善若水” 的包容品格。2023 年，都江堰灌区入选全球首个 “超大型灌区”，标志着古老智慧与现代生态理念的完美共振 —— 当岷江水穿越千年堰体，润泽的不仅是沃野千里的天府大地，更是中华文明与自然共生的永恒哲思。
+            </p>
+        </dl>
+    </div>
+
+    <div id="core-features" style="text-align: center; margin: 40px 0;">
+        <!-- 大字 -->
+        <h1 style="
+            font-size: 36px; 
+            font-weight: bold; 
+            color: #333; 
+            margin-bottom: 10px; 
+            font-family: 'Microsoft YaHei', sans-serif;">
+            核心功能详解
+        </h1>
+        <!-- 小字 -->
+        <p style="
+            font-size: 16px; 
+            color: #666; 
+            line-height: 1.8; 
+            font-family: 'Microsoft YaHei', sans-serif;">
+            对本可视化平台支持的功能和用法进行详细解释
+        </p>
+    </div>    
+    <main id="mybody">
+        <aside id="myleft">
+            <div class="u-secnav ztzt">核心功能</div>
+            <ul>
+                <li><a href="#" data-id="1" title="机构简介">都江堰工程图文解析</a></li>
+                <li><a href="#" data-id="2" title="都江堰">二维交互式地图</a></li>
+                <li><a href="#" data-id="3" title="都江堰">三维重现</a></li>
+                <li><a href="#" data-id="4" title="都江堰">背景故事时间轴</a></li>
+            </ul>
+        </aside>
+
+        <article id="myright">
+            <div class="bg1"></div>
+            <div class="bg2">
+                <h2><span class="highlight">初步领略都江堰的魅力</span></h2>
+                <a href="#target-section">
+                <img src="skin/images/功能_01.png" class="styled-image" alt="都江堰工程图文详解" style="max-width: 100%; height: auto;">
+                <p>　　古都江堰工程可视化交互平台聚焦都江堰工程，提供了丰富的交互体验。网站首页播放相关视频，中部有居中 Logo 增强视觉效果，下方设有功能介绍，涵盖都江堰工程介绍、二维交互式地图探索、三维重现景观及了解背景故事四大功能，用户点击功能点可查看详细描述。导航栏提供 “千载堰门・云启”“舆图绘世”“2D 地图”“3D 浮空幻境”“青史凿痕” 等页面入口，网站还通过轮播图展示都江堰美景，右侧介绍都江堰历史与构成，此外还有搜索功能及回到顶部按钮，提升用户体验。</p>
+                </a>
+            </div>
+            <div class="bg3"></div>
+        </article>
+    </main>
+
+    <script>
+        // 图文内容数据
+        const contentData = {
+            1: `
+                <h2><span class="highlight">初步领略都江堰的魅力</span></h2>
+                <a href="#target-section">
+                <img src="skin/images/功能_01.png" class="styled-image" alt="都江堰工程图文详解" style="max-width: 100%; height: auto;">
+                <p>　　古都江堰工程可视化交互平台聚焦都江堰工程，提供了丰富的交互体验。网站首页播放相关视频，中部有居中 Logo 增强视觉效果，下方设有功能介绍，涵盖都江堰工程介绍、二维交互式地图探索、三维重现景观及了解背景故事四大功能，用户点击功能点可查看详细描述。导航栏提供 “千载堰门・云启”“舆图绘世”“2D 地图”“3D 浮空幻境”“青史凿痕” 等页面入口，网站还通过轮播图展示都江堰美景，右侧介绍都江堰历史与构成，此外还有搜索功能及回到顶部按钮，提升用户体验。</p>
+                </a>
+            `,
+            2: `
+                <h2><span class="highlight">二维交互式地图</span></h2>
+                <a href="2d.html">
+                <img src="skin/images/功能_02.png" class="styled-image" alt="二维地图" style="max-width: 100%; height: auto;">
+                <p>　　通过这一精心打造的二维交互式地图，您将开启一场探索都江堰之旅。地图上清晰标注了都江堰水利工程各主要部分的精确地理位置，如鱼嘴分水堤、飞沙堰溢洪道和宝瓶口进水口等。同时，周边环境也一目了然，包括岷江的流向、成都平原的地形地貌以及周边的城镇分布。您只需轻轻点击或滑动屏幕，就能实现地图的缩放与平移操作，深入查看感兴趣区域的详细信息。此外，地图还设有丰富的信息弹窗，当您将鼠标悬停在特定地标上时，会弹出详细介绍，帮助您更好地了解都江堰的地理布局和水利工程的精妙之处。</p>
+                </a>
+            `,
+            3: `
+                <h2><span class="highlight">三维重现</span></h2>
+                <a href="3d.html">
+                <img src="skin/images/功能_03.png" class="styled-image" alt="三维模型" style="max-width: 100%; height: auto;">
+                <p>　　借助先进的三维重现技术，您将仿若穿越时空，身临其境地感受都江堰的历史风貌。三维模型高度还原了都江堰水利工程在不同历史时期的形态，从最初李冰父子率众修建时的雏形，到历经各朝代修缮后的完备模样，均栩栩如生地展现在您眼前。您可以全方位、多角度地观察工程的每一处细节，如石砌堤堰的纹理、水闸的开合构造等。配合动态水流模拟效果，您能直观地看到岷江之水如何通过鱼嘴分流，经飞沙堰排沙，最后流入宝瓶口，真切体会到古人设计这一水利工程时的巧思与智慧，仿佛置身于古代水利建设的宏大场景之中。</p>
+                </a>
+            `,
+            4: `
+                <h2><span class="highlight">背景故事时间轴</span></h2>
+                <a href="story.html">
+                <img src="skin/images/功能_04.png" class="styled-image" alt="故事时间轴" style="max-width: 100%; height: auto;">
+                <p>　　这条精心绘制的背景故事时间轴，是您了解都江堰深厚历史底蕴和重要事件的窗口。时间轴起始于公元前256年，也就是秦国蜀郡太守李冰父子主持修建都江堰的那一年，详细记录了工程从规划设计到逐步建成的艰辛历程。此后，各个朝代对都江堰的修缮与维护也在时间轴上一一呈现，如汉代对渠首工程的整治、唐代对灌溉渠道的拓展等。其中，重大历史事件如宋朝设立专门管理都江堰水利的机构、清朝对鱼嘴进行大规模加固等，都配有详细的文字说明和相关图片资料。通过这条时间轴，您可以清晰地梳理出都江堰两千多年来的发展脉络，深刻认识到它对中国古代农业文明发展所起到的不可磨灭的推动作用。</p>
+                </a>
+            `
+        };
+
+        // 获取所有的链接和 bg2 容器
+        const links = document.querySelectorAll('#myleft a');
+        const bg2 = document.querySelector('.bg2');
+
+        // 为每个链接添加点击事件
+        links.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault(); // 阻止默认跳转行为
+                const id = link.getAttribute('data-id'); // 获取 data-id 属性
+                const content = contentData[id]; // 根据 id 获取对应内容
+                bg2.innerHTML = content; // 更新 bg2 的内容
+            });
+        });
+    </script>
+
+    <div id="footer">
+        <ul>
+            <li><font style="font-size: 16px;font-weight: bold;">中国计算机设计大赛2025·4C大赛</font></li>
+        </ul>
+    </div>
+
+    <div id="bottom">
+        <div class="ftbg"></div>
+    </div>
+
+    <!-- 水流雕刻动画容器 -->
+    <div id="water-sculpture">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="50%" text-anchor="middle" dy=".35em" class="sculpture-text">
+                都江堰
+            </text>
+        </svg>
+    </div>
+</body>
+</html>

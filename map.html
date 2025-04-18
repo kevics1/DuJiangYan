@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>都江堰全屏地图</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link href="/skin/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/skin/css/swiper.min.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #fullscreen-map {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .layer-panel {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .layer-panel h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .layer-panel label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .layer-panel input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .exit-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .exit-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* 右侧展示板样式 */
+        .info-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            height: 700px;
+            /* 增加高度 */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: 'stfyt', Arial, sans-serif;
+            z-index: 1000;
+        }
+
+        /* 叉叉按钮样式 */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #ff1a1a;
+            transform: scale(1.1);
+            /* 鼠标悬停时放大 */
+        }
+
+        /* 小正方形按钮样式 */
+        .expand-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: none;
+            /* 默认隐藏 */
+        }
+
+        .expand-button:hover {
+            background: #005bb5;
+            transform: scale(1.1);
+            /* 鼠标悬停时放大 */
+        }
+
+        .info-panel h3 {
+            margin: 0;
+            padding: 15px;
+            background: #0078d7;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .info-panel h4 {
+            font-size: 24px;
+            /* 调整字体大小 */
+            font-weight: bold;
+            /* 加粗 */
+            color: rgb(146, 0, 0);
+            /* 设置为红色 */
+            margin: 10px 0;
+            /* 增加上下间距 */
+            text-align: center;
+            /* 居中对齐 */
+        }
+
+        .info-panel .content {
+            padding: 15px;
+            padding-bottom: 30px;
+            /* 增加底部留白 */
+            font-size: 14px;
+            color: #333;
+            text-align: justify;
+            /* 两端对齐 */
+            height: calc(100% - 130px);
+            /* 减去标题的高度 */
+            overflow-y: auto;
+            /* 添加垂直滚动条 */
+        }
+
+        .info-panel img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* 添加过渡效果 */
+        }
+
+        .info-panel img:hover {
+            transform: scale(1.04);
+            /* 鼠标悬停时放大 */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            /* 添加阴影效果 */
+        }
+
+        .info-panel p {
+            margin: 0;
+            line-height: 1.8;
+            /* 调整行高 */
+            text-align: justify;
+            /* 两端对齐 */
+        }
+
+        @font-face {
+            font-family: 'stfyt';
+            src: url('stfyt.TTF') format('truetype');
+        }
+
+        .info-panel .content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .info-panel .content::-webkit-scrollbar-thumb {
+            background: #0078d7;
+            border-radius: 4px;
+        }
+
+        .info-panel .content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* 搜索框容器样式 */
+        .search-container {
+            position: fixed;
+            top: 20px;
+            left: 25%;
+            transform: translateX(-50%);
+            width: 300px;
+            z-index: 1000;
+            font-family: 'stfyt', Arial, sans-serif;
+        }
+
+        /* 搜索框样式 */
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(0, 120, 215, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 搜索建议框样式 */
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 120, 215, 0.1);
+            padding-left: 25px;
+        }
+
+        .no-results {
+            padding: 15px 20px;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* 滚动条样式 */
+        .suggestions-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .suggestions-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .suggestions-container::-webkit-scrollbar-thumb {
+            background: #0078d7;
+            border-radius: 3px;
+        }
+
+        .suggestions-container::-webkit-scrollbar-thumb:hover {
+            background: #005bb5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fullscreen-map"></div>
+    <div class="layer-panel">
+        <h3>图层控制</h3>
+        <label><input type="radio" name="basemap" value="vector" checked> 矢量底图</label>
+        <label><input type="radio" name="basemap" value="image"> 影像底图</label>
+        <label><input type="checkbox" data-layer="hl"> 河流</label>
+        <label><input type="checkbox" data-layer="zrm"> 周围自然面</label>
+        <label><input type="checkbox" data-layer="sl"> 水利枢纽</label>
+        <label><input type="checkbox" data-layer="jz"> 现代建筑</label>
+        <label><input type="checkbox" data-layer="dl"> 主要道路</label>
+    </div>
+    <!-- 右侧展示板 -->
+    <div class="info-panel">
+        <button class="close-button">×</button>
+        <h3>详情展示</h3>
+        <div class="content">
+            <p>请点击地图要素查看详情</p>
+        </div>
+    </div>
+    <button class="expand-button" style="display: none;">点击展开</button>
+    <button class="exit-button" onclick="window.close()">返回主页面</button>
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="搜索景点、建筑、区域...">
+        <div class="suggestions-container"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // 天地图密钥
+        const TIANDITU_KEY = '0b2def4132f23f364f53fd204e808559';
+
+        // 都江堰坐标
+        const mapCenter = [31.0086, 103.6050];
+
+        // 初始化地图
+        const map = L.map('fullscreen-map', {
+            center: mapCenter,
+            zoom: 14,
+            scrollWheelZoom: true
+        });
+
+        // 定义矢量底图
+        const vectorTileLayer = L.tileLayer(`https://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TIANDITU_KEY}`, {
+            attribution: '© 天地图',
+            maxZoom: 20,
+            opacity: 0.8
+        });
+
+        // 定义影像底图
+        const imageTileLayer = L.tileLayer(`https://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TIANDITU_KEY}`, {
+            attribution: '© 天地图',
+            maxZoom: 20,
+            opacity: 0.8
+        });
+
+        // 默认添加矢量底图到地图
+        vectorTileLayer.addTo(map);
+
+        // 定义图层配置
+        const layersConfig = {
+            hl: { name: 'hl', style: '河流' },
+            zrm: { name: 'zrm', style: '周围自然面' },
+            sl: { name: 'sl', style: '水利枢纽' },
+            jz: { name: 'jz', style: '现代建筑' },
+            dl: { name: 'dl', style: '主要道路' }
+        };
+
+        // 存储图层对象
+        const layers = {};
+
+        // 初始化图层但不添加到地图
+        Object.keys(layersConfig).forEach(key => {
+            const config = layersConfig[key];
+            layers[key] = L.tileLayer.wms('http://localhost:8080/geoserver/dujiangyan/wms', {
+                layers: `dujiangyan:${config.name}`,
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0',
+                crs: L.CRS.EPSG4326,
+                opacity: 0.7,
+                styles: config.style,
+                attribution: 'GeoServer WMS Data'
+            });
+        });
+
+        // 监听复选框的变化
+        document.querySelectorAll('.layer-panel input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const layerKey = this.getAttribute('data-layer');
+                if (this.checked) {
+                    layers[layerKey].addTo(map); // 添加图层到地图
+                } else {
+                    map.removeLayer(layers[layerKey]); // 从地图移除图层
+                }
+            });
+        });
+
+        document.querySelectorAll('input[name="basemap"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'vector') {
+                    map.removeLayer(imageTileLayer); // 移除影像底图
+                    map.addLayer(vectorTileLayer); // 添加矢量底图
+                } else if (this.value === 'image') {
+                    map.removeLayer(vectorTileLayer); // 移除矢量底图
+                    map.addLayer(imageTileLayer); // 添加影像底图
+                }
+            });
+        });
+
+        // 加载 GeoJSON 文件并叠加到地图上
+        fetch('geojson/dian.json')
+            .then(response => response.json())
+            .then(data => {
+                const geojsonLayer = L.geoJSON(data, {
+                    pointToLayer: (feature, latlng) => {
+                        const name = feature.properties.name;
+                        const iconUrl = `svg/${name}.svg`;
+
+                        const customIcon = L.icon({
+                            iconUrl: iconUrl,
+                            iconSize: [24, 24], // 调整图标大小为 24x24
+                            iconAnchor: [12, 12], // 图标锚点调整为中心
+                            popupAnchor: [0, -12] // 弹出框锚点
+                        });
+
+                        return L.marker(latlng, { icon: customIcon });
+                    },
+                    onEachFeature: (feature, layer) => {
+                        // 为每个点要素绑定弹出框
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindPopup(`${feature.properties.name}`);
+                        }
+
+                        // 点击事件，更新右侧展示板内容
+                        layer.on('click', () => {
+                            const infoPanel = document.querySelector('.info-panel .content');
+                            const name = feature.properties.name;
+                            const description = feature.properties.description.replace(/\n/g, '<br>') || '暂无描述';
+                            const imageUrl = `images/${name}.jpg`;
+
+                            // 更新展示板内容
+                            infoPanel.innerHTML = `
+                                <img src="${imageUrl}" alt="${name}">
+                                <h4>${name}</h4>
+                                <p>${description}</p>
+                            `;
+                        });
+                    }
+                });
+
+                geojsonLayer.addTo(map);
+            })
+            .catch(error => {
+                console.error('加载 GeoJSON 文件失败:', error);
+            });
+
+        // 加载 GeoJSON 线要素文件并叠加到地图上
+        fetch('geojson/xian.json')
+            .then(response => response.json())
+            .then(data => {
+                const geojsonLayer = L.geoJSON(data, {
+                    style: (feature) => {
+                        // 根据线要素的名字设置不同的样式
+                        switch (feature.properties.name) {
+                            case '安澜索桥':
+                                return {
+                                    color: '#FF5733', // 线颜色
+                                    weight: 4, // 线宽度
+                                    dashArray: '5, 5', // 虚线样式
+                                    opacity: 0.8 // 透明度
+                                };
+                            case '南桥':
+                                return {
+                                    color: '#33A1FF',
+                                    weight: 4,
+                                    dashArray: '10, 5', // 虚线样式
+                                    opacity: 0.8
+                                };
+                            default:
+                                return {
+                                    color: '#000000',
+                                    weight: 2,
+                                    opacity: 0.5
+                                };
+                        }
+                    },
+                    onEachFeature: (feature, layer) => {
+                        // 鼠标悬停特效
+                        layer.on('mouseover', () => {
+                            layer.setStyle({
+                                color: '#FFD700', // 高亮颜色
+                                weight: 6, // 增加线宽
+                                opacity: 1 // 提高透明度
+                            });
+                        });
+
+                        // 鼠标移出特效
+                        layer.on('mouseout', () => {
+                            geojsonLayer.resetStyle(layer); // 重置为默认样式
+                        });
+
+                        // 点击事件，更新右侧展示板内容
+                        layer.on('click', () => {
+                            const infoPanel = document.querySelector('.info-panel .content');
+                            const name = feature.properties.name;
+                            const description = feature.properties.description || '暂无描述';
+                            const imageUrl = `images/${name}.jpg`; // 假设图片路径为 images 文件夹
+
+                            // 更新展示板内容
+                            infoPanel.innerHTML = `
+                                <img src="${imageUrl}" alt="${name}">
+                                <h4>${name}</h4>
+                                <p>${description}</p>
+                            `;
+                        });
+                    }
+                });
+
+                geojsonLayer.addTo(map);
+            })
+            .catch(error => {
+                console.error('加载 GeoJSON 文件失败:', error);
+            });
+
+        // 加载 GeoJSON 面要素文件并叠加到地图上
+        fetch('geojson/mian.json')
+            .then(response => response.json())
+            .then(data => {
+                const geojsonLayer = L.geoJSON(data, {
+                    style: (feature) => {
+                        // 根据面要素的名字设置不同的样式
+                        switch (feature.properties.name) {
+                            case '二王庙景区':
+                                return {
+                                    color: '#FF5733', // 边界颜色
+                                    fillColor: '#FFC300', // 填充颜色
+                                    fillOpacity: 0.6, // 填充透明度
+                                    weight: 2 // 边界宽度
+                                };
+                            case '鱼嘴':
+                                return {
+                                    color: '#33A1FF',
+                                    fillColor: '#85C1E9',
+                                    fillOpacity: 0.6,
+                                    weight: 2
+                                };
+                            case '玉垒关公园':
+                                return {
+                                    color: '#28B463',
+                                    fillColor: '#82E0AA',
+                                    fillOpacity: 0.6,
+                                    weight: 2
+                                };
+                            default:
+                                return {
+                                    color: '#000000',
+                                    fillColor: '#CCCCCC',
+                                    fillOpacity: 0.5,
+                                    weight: 1
+                                };
+                        }
+                    },
+                    onEachFeature: (feature, layer) => {
+                        // 鼠标悬停特效
+                        layer.on('mouseover', () => {
+                            layer.setStyle({
+                                fillOpacity: 0.9, // 增加透明度
+                                weight: 3, // 增加边界宽度
+                                color: '#FFD700' // 改变边界颜色为金色
+                            });
+                        });
+
+                        // 鼠标移出特效
+                        layer.on('mouseout', () => {
+                            geojsonLayer.resetStyle(layer); // 重置为默认样式
+                        });
+                        // 点击事件，更新右侧展示板内容
+                        layer.on('click', () => {
+                            const infoPanel = document.querySelector('.info-panel .content');
+                            const name = feature.properties.name;
+                            const description = feature.properties.description || '暂无描述';
+                            const imageUrl = `images/${name}.jpg`; // 假设图片路径为 images 文件夹
+
+                            // 更新展示板内容
+                            infoPanel.innerHTML = `
+                                <img src="${imageUrl}" alt="${name}">
+                                <h4>${name}</h4>
+                                <p>${description}</p>
+                            `;
+                        });
+                    }
+                });
+
+                geojsonLayer.addTo(map);
+            })
+            .catch(error => {
+                console.error('加载 GeoJSON 文件失败:', error);
+            });
+
+
+        // 获取展示板和按钮元素
+        const infoPanel = document.querySelector('.info-panel');
+        const closeButton = document.querySelector('.close-button');
+        const expandButton = document.querySelector('.expand-button');
+
+        // 点击叉叉按钮隐藏展示板
+        closeButton.addEventListener('click', () => {
+            infoPanel.style.display = 'none'; // 隐藏展示板
+            expandButton.style.display = 'block'; // 显示小正方形按钮
+        });
+
+        // 点击小正方形按钮展开展示板
+        expandButton.addEventListener('click', () => {
+            infoPanel.style.display = 'block'; // 显示展示板
+            expandButton.style.display = 'none'; // 隐藏小正方形按钮
+        });
+
+        // 搜索功能实现
+        let allFeatures = []; // 存储所有要素
+        let searchInput = document.querySelector('.search-input');
+        let suggestionsContainer = document.querySelector('.suggestions-container');
+
+        // 加载所有 GeoJSON 数据并合并
+        Promise.all([
+            fetch('geojson/dian.json').then(response => response.json()),
+            fetch('geojson/xian.json').then(response => response.json()),
+            fetch('geojson/mian.json').then(response => response.json())
+        ]).then(([pointData, lineData, polygonData]) => {
+            // 合并所有要素并添加类型标识
+            allFeatures = [
+                ...pointData.features.map(f => ({ ...f, featureType: 'point' })),
+                ...lineData.features.map(f => ({ ...f, featureType: 'line' })),
+                ...polygonData.features.map(f => ({ ...f, featureType: 'polygon' }))
+            ];
+        });
+
+        // 搜索输入处理
+        searchInput.addEventListener('input', debounce(function (e) {
+            const searchText = e.target.value.trim();
+
+            if (searchText === '') {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            const matches = allFeatures.filter(feature =>
+                feature.properties.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+
+            displaySuggestions(matches);
+        }, 300));
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 显示搜索建议
+        function displaySuggestions(matches) {
+            suggestionsContainer.style.display = 'block';
+
+            if (matches.length === 0) {
+                suggestionsContainer.innerHTML = '<div class="no-results">暂无结果...</div>';
+                return;
+            }
+
+            suggestionsContainer.innerHTML = matches
+                .map(feature => `
+                <div class="suggestion-item" data-feature-type="${feature.featureType}" 
+                     data-name="${feature.properties.name}">
+                    ${feature.properties.name}
+                </div>
+            `)
+                .join('');
+        }
+
+        // 点击建议项处理
+        suggestionsContainer.addEventListener('click', function (e) {
+            const item = e.target.closest('.suggestion-item');
+            if (!item) return;
+
+            const featureName = item.dataset.name;
+            const feature = allFeatures.find(f => f.properties.name === featureName);
+
+            if (feature) {
+                // 定位到要素
+                let bounds;
+                if (feature.featureType === 'point') {
+                    const coords = feature.geometry.coordinates;
+                    map.setView([coords[1], coords[0]], 18);
+                } else {
+                    bounds = L.geoJSON(feature).getBounds();
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+
+                // 更新展示板内容
+                updateInfoPanel(feature);
+            }
+
+            // 清空搜索框和建议
+            searchInput.value = '';
+            suggestionsContainer.style.display = 'none';
+        });
+
+        // 点击其他区域关闭建议框
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.search-container')) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+
+        // 更新展示板内容
+        function updateInfoPanel(feature) {
+            const infoPanel = document.querySelector('.info-panel .content');
+            const name = feature.properties.name;
+            const description = feature.properties.description || '暂无描述';
+            const imageUrl = `images/${name}.jpg`;
+
+            infoPanel.innerHTML = `
+            <img src="${imageUrl}" alt="${name}">
+            <h4>${name}</h4>
+            <p>${description}</p>
+        `;
+
+            // 确保展示板可见
+            document.querySelector('.info-panel').style.display = 'block';
+            document.querySelector('.expand-button').style.display = 'none';
+        }
+        // 响应窗口大小变化
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+        });
+    </script>
+</body>
+
+</html>

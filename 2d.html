@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <title>机构介绍-都江堰遗产网-都江堰遗产保护管理办公室</title>
+    <meta name="keywords" content="都江堰遗产保护管理办公室,世遗办,扬州世遗办">
+    <meta name="description" content="都江堰遗产保护管理办公室，前身为都江堰联合申报世界文化遗产办公室，主要职能为协调、组织、实施都江堰全线遗产保护管理工作。">
+    
+    <!-- 样式表 -->
+    <link href="/skin/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/skin/css/swiper.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="/skin/css/water-sculpture.css">
+    <script src="/skin/js/water-sculpture.js"></script>
+    
+    <!-- 预加载脚本 -->
+    <link rel="preload" href="/skin/js/swiper.min.js" as="script">
+    <link rel="preload" href="/skin/js/jquery.js" as="script">
+</head>
+
+<body>
+    <!-- 页面结构保持不变 -->
+    <div id="gotop"><span>回到顶部</span></div>
+    <div id="header">
+        <dl id="logosearch">
+            <img id="logo" src="/static/upload/image/logo/mainlogo.png" width="" height="80" />
+            <dd>
+                <form id="searchForm">
+                    <input type="text" name="keyword" id="sipt" placeholder="请输入关键词" />
+                    <input type="submit" id="sbtn" value="搜索" />
+                </form>
+                <img src="/skin/images/open.png" width="21" height="21" class="mobNav" xf="/skin/images/close.png" alt="导航开关">
+            </dd>
+        </dl>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // 阻止默认提交行为
+            const keyword = document.getElementById('sipt').value.trim();
+            if (keyword) {
+                // 跳转到结果页面并传递关键词
+                window.location.href = `results.html?keyword=${encodeURIComponent(keyword)}`;
+            }
+        });
+    </script>
+
+    <nav id="nav">
+        <ul>
+            <li><a href="home.html" class="navlink ztzt">千载堰门·云启</a></li>
+            <li><span><img src="/skin/images/navo.png" alt="导航分隔符"></span></li>
+            <li><a href="2d.html" class="navlink ztzt curnav">舆图绘世</a></li>
+            <li><span><img src="/skin/images/navo.png" alt="导航分隔符"></span></li>
+            <li><a href="3d古迹显示/index2.html" target="_blank" class="navlink ztzt">浮空幻境</a></li>
+            <li><span><img src="/skin/images/navo.png" alt="导航分隔符"></span></li>
+            <li><a href="story.html" class="navlink ztzt">青史凿痕</a></li>
+        </ul>
+    </nav>
+
+    <div id="location">
+        <span>当前位置：</span>
+        <img src="/skin/images/l.png" width="18" height="15" alt="定位图标">
+        <a href="/">首页</a> &gt;&gt; <a href="/?about/">机构介绍</a>
+    </div>
+
+    <main id="mybody">
+        <aside id="myleft">
+            <div class="u-secnav ztzt">舆图绘世</div>
+            <ul>
+                <li><a href="" title="机构简介">二维交互地图</a></li>
+                <li><a href="" title="都江堰">数据可视化</a></li>
+            </ul>
+        </aside>
+
+        <article id="myright">
+            <div class="bg1"></div>
+            <div class="bg2">
+                <!-- 原有文字内容保持不变 -->
+                <p></p>
+                
+                <!-- 新增地图容器 -->
+                <div id="djy-map" style="height: 400px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>                
+                <!-- 新增全屏控制容器 -->
+                <div class="map-controls">
+                    <button id="fullscreen-btn" class="fullscreen-button">
+                        <span class="fullscreen-icon">⛶</span> 全屏观堰
+                    </button>
+                    <span class="map-tip">点击展开时空长卷，纵览千年水利经纬</span>
+                </div>
+            </div>
+            <div class="bg3"></div>
+        </article>
+    </main>
+
+    <div id="footer">
+        <ul>
+            <li><font style="font-size: 16px;font-weight: bold;">中国计算机设计大赛2025·4C大赛</font></li>
+        </ul>
+    </div>
+
+    <div id="bottom">
+        <div class="ftbg"></div>
+    </div>
+
+    <!-- 脚本放在底部 -->
+    <script src="/skin/js/jquery.js"></script>
+    <script src="/skin/js/swiper.min.js"></script>
+    <script src="/skin/js/jquery.superslide.2.1.3.js"></script>
+    <script src="/skin/js/js.js"></script>
+    
+    <!-- Leaflet 地图库 -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- 地图初始化脚本 -->
+    <script>
+        // 天地图密钥
+        const TIANDITU_KEY = '0b2def4132f23f364f53fd204e808559';
+        
+        // 都江堰坐标
+        const mapCenter = [31.0086, 103.6050];
+
+        // 初始化地图
+        const map = L.map('djy-map', {
+            center: mapCenter,
+            zoom: 14,
+            scrollWheelZoom: true
+        });
+
+        // 添加天地图图层
+        L.tileLayer(`https://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TIANDITU_KEY}`, {
+            attribution: '© 天地图',
+            maxZoom: 18
+        }).addTo(map);
+
+        // 创建GeoServer图层配置
+        const layerConfigs = [
+            {name: 'hl', title: '河流面状', style: '河流'},
+            {name: 'zrm', title: '周围自然面', style: '周围自然面'},
+            {name: 'wm', title: '面状景点', style: 'dujiangyan:word面'},
+            {name: 'sl', title: '水利枢纽', style: '水利枢纽'},
+            {name: 'jz', title: '现代建筑', style: '现代建筑'},
+            {name: 'dl', title: '主要道路', style: '主要道路'},
+            {name: 'wx', title: '线状景点', style: 'dujiangyan:word线'},
+            {name: 'wd', title: '点状景点', style: 'dujiangyan:word点'},
+            {name: 'bd', title: '补充古迹点', style: '补充点'}
+        ];
+
+        // 创建并添加图层
+        const layers = {};
+        layerConfigs.forEach(config => {
+            layers[config.name] = L.tileLayer.wms('http://localhost:8080/geoserver/dujiangyan/wms', {
+                layers: `dujiangyan:${config.name}`,
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0',
+                crs: L.CRS.EPSG4326,
+                opacity: 0.7,
+                styles: config.style,
+                attribution: 'GeoServer WMS Data'
+            });
+        });
+
+        // 按顺序添加图层
+        ['hl', 'zrm', 'wm', 'sl', 'jz', 'dl', 'wx', 'wd', 'bd'].forEach(name => {
+            layers[name].addTo(map);
+        });
+
+        // 响应式调整
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+        });
+
+        // 全屏地图功能
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        
+        function openFullscreenMap() {
+            // 获取屏幕宽度和高度
+            const width = window.screen.availWidth;
+            const height = window.screen.availHeight;
+            // 设置窗口特性，包括宽度、高度和位置
+            const features = `width=${width},height=${height},top=0,left=0,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes`;
+            const mapWindow = window.open('map.html', '_blank', features);
+            
+            // 确保新窗口成功打开
+            if (mapWindow) {
+                mapWindow.focus();
+                // 尝试最大化窗口
+                mapWindow.moveTo(0, 0);
+                mapWindow.resizeTo(width, height);
+            } else {
+                alert('地图打开失败，请检查浏览器是否阻止了弹出窗口。');
+            }
+        }
+
+        // 绑定全屏按钮点击事件
+        fullscreenBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openFullscreenMap();
+        });
+    </script>
+
+    <!-- 水流雕刻动画容器 -->
+    <div id="water-sculpture">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="50%" text-anchor="middle" dy=".35em" class="sculpture-text">
+                都江堰
+            </text>
+        </svg>
+    </div>
+</body>
+</html>

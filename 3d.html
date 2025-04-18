@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="renderer" content="webkit" />
+    <title>展示利用-都江堰遗产网-都江堰遗产保护管理办公室</title>
+    <meta name="keywords" content="都江堰遗产保护管理办公室,世遗办,扬州世遗办" />
+    <meta name="description" content="都江堰遗产保护管理办公室，前身为都江堰联合申报世界文化遗产办公室，主要职能为协调、组织、实施都江堰全线遗产保护管理工作。" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link href="/skin/css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/skin/css/swiper.min.css" />
+    <script language="javascript" src="/skin/js/swiper.min.js"></script>
+    <script src="/skin/js/jquery.js"></script>
+    <script src="/skin/js/jquery.superslide.2.1.3.js"></script>
+    <script src="/skin/js/js.js"></script>
+    <link rel="stylesheet" href="/skin/css/water-sculpture.css">
+    <script src="/skin/js/water-sculpture.js"></script>
+</head>
+
+<body>
+    <!-- 完整保留所有原始内容 -->
+    <div id="gotop"><span>回到顶部</span></div>
+    
+    <div id="header">
+        <dl id="logosearch">
+            <img id="logo" src="/static/upload/image/logo/mainlogo.png" width="" height="80" />
+            <dd>
+                <form id="searchForm">
+                    <input type="text" name="keyword" id="sipt" placeholder="请输入关键词" />
+                    <input type="submit" id="sbtn" value="搜索" />
+                </form>
+                <img src="/skin/images/open.png" width="21" height="21" class="mobNav" xf="/skin/images/close.png" />
+            </dd>
+        </dl>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // 阻止默认提交行为
+            const keyword = document.getElementById('sipt').value.trim();
+            if (keyword) {
+                // 跳转到结果页面并传递关键词
+                window.location.href = `results.html?keyword=${encodeURIComponent(keyword)}`;
+            }
+        });
+    </script>
+
+    <div id="nav">
+        <ul>
+            <li><a href="home.html" class="navlink ztzt">千载堰门·云启</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="2d.html" class="navlink ztzt">舆图绘世</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="3d.html" class="navlink ztzt curnav">浮空幻境</a></li>
+            <span><img src="/skin/images/navo.png"></span>
+            <li><a href="story.html" class="navlink ztzt">青史凿痕</a></li>
+        </ul>
+    </div>
+
+    <table>
+        <tbody>
+            <tr class="firstRow">
+                <td width="100%" valign="top" height="10px"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 完整保留位置导航 -->
+    <div id="location">
+        <span>当前位置：</span>
+        <img src="/skin/images/l.png" width="18" height="15" /> 
+        <a href="/">首页</a> >> 
+        <a href="/?news/">新闻速递</a> >> 
+        <a href="/?utilization/">展示利用</a>
+    </div>
+
+    <!-- 完整保留主体内容 -->
+    <div id="mybody">
+        <ul id="myleft">
+            <div class="u-secnav ztzt">新闻速递</div>
+            <!-- 完整保留左侧导航 -->
+            <li><a href="/?grandcanalnews/" title="运河传真">运河传真</a></li>
+            <li><a href="/?management/" title="保护管理">保护管理</a></li>
+            <li><a href="/?utilization/" class="curlnav" title="展示利用">展示利用</a></li>
+        </ul>
+
+        <div id="myright">
+            <div class="bg1"></div>
+            <div class="bg2">
+                <!-- 完整保留文章列表 -->
+                <ul id="textlist">
+                    <li><span>2024-11-12</span><a href="/?utilization/7286.html">把文化底蕴转化为文化产业</a></li>
+                    <!-- 完整保留全部20条列表项 -->
+                    <li><span>2021-02-02</span><a href="/?utilization/3184.html">央视《开讲啦》，听"运河三老"之一朱炳仁讲述运河申遗时的故事</a></li>
+                </ul>
+
+                <!-- 完整保留分页组件 -->
+                <div class="pagebar">
+                    <div class="pagination">
+                        <a class="page-item page-link st" href="javascript:;" title="上一页">&lt;&lt;</a>
+                        <a href="/?utilization/" class="page-num page-num-current">1</a>
+                        <a href="/?utilization_2/" class="page-num">2</a>
+                        <a href="/?utilization_3/" class="page-num">3</a>
+                        <a href="/?utilization_4/" class="page-num">4</a>
+                        <a href="/?utilization_5/" class="page-num">5</a>
+                        <span class="page-num">···</span>
+                        <a class="page-item page-link" href="javascript:;" title="当前页/总页数">1/61</a>
+                        <a class="page-item page-link st" href="/?utilization_2/" title="下一页">&gt;&gt;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="bg3"></div>
+        </div>
+    </div>
+
+    <!-- 完整保留页脚 -->
+    <div class="footer">
+        <div id="f3">
+            Copyright © 2023 都江堰遗产保护管理办公室 All Rights Reserved.<br />
+            <a href="https://beian.miit.gov.cn/" rel="nofollow" target="_blank">苏ICP备2022042802号</a>
+        </div>
+    </div>
+
+    <div id="bottom">
+        <div class="ftbg"></div>
+        Copyright © 2023 都江堰遗产保护管理办公室 All Rights Reserved.<br>
+        <a href="https://beian.miit.gov.cn/" rel="nofollow" target="_blank">苏ICP备2022042802号</a><br>
+        <a href="/index.php/sitemap.xml" target="_blank">XML地图</a>
+    </div>
+
+    <!-- 水流雕刻动画容器 -->
+    <div id="water-sculpture">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="50%" text-anchor="middle" dy=".35em" class="sculpture-text">
+                都江堰
+            </text>
+        </svg>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果</title>
+</head>
+<body>
+    <h1>搜索结果</h1>
+    <div id="results">正在加载搜索结果...</div>
+
+    <script>
+        // 获取 URL 中的关键词
+        const urlParams = new URLSearchParams(window.location.search);
+        const keyword = urlParams.get('keyword');
+
+        // 定义要搜索的页面
+        const pages = [
+            { name: '首页', url: 'home.html' },
+            { name: '2D 页面', url: '2d.html' },
+            { name: '3D 页面', url: '3d.html' },
+            { name: '故事页面', url: 'story.html' }
+        ];
+
+        const resultsDiv = document.getElementById('results');
+
+        if (keyword) {
+            let found = false;
+            let loadedPages = 0;
+
+            pages.forEach(page => {
+                // 使用 fetch 加载页面内容
+                fetch(page.url)
+                    .then(response => response.text())
+                    .then(html => {
+                        // 使用 DOMParser 解析 HTML
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const textContent = doc.body.innerText; // 提取页面中的所有文字
+
+                        // 检查是否包含关键词
+                        if (textContent.includes(keyword)) {
+                            found = true;
+
+                            // 在目标页面中查找关键词的位置
+                            const keywordIndex = textContent.indexOf(keyword);
+                            const contextStart = Math.max(0, keywordIndex - 30);
+                            const contextEnd = keywordIndex + 30;
+
+                            // 动态生成锚点 ID
+                            const anchorId = `keyword-${page.name}-${keywordIndex}`;
+
+                            // 在结果中显示匹配内容并生成跳转链接
+                            const resultItem = document.createElement('div');
+                            resultItem.innerHTML = `
+                                <p>在 <strong>${page.name}</strong> 中找到匹配内容：</p>
+                                <p>...${textContent.substring(contextStart, contextEnd)}...</p>
+                                <a href="${page.url}#${anchorId}" target="_blank">点击跳转到具体位置</a>
+                                <hr>
+                            `;
+                            resultsDiv.appendChild(resultItem);
+
+                            // 在目标页面中插入锚点（通过 localStorage 传递信息）
+                            const anchorScript = `
+                                const targetElement = document.body.innerHTML;
+                                const keywordPosition = targetElement.indexOf('${keyword}');
+                                if (keywordPosition !== -1) {
+                                    const updatedContent = targetElement.substring(0, keywordPosition) +
+                                        '<a name="${anchorId}"></a>' +
+                                        targetElement.substring(keywordPosition);
+                                    document.body.innerHTML = updatedContent;
+                                }
+                            `;
+                            localStorage.setItem(`anchorScript-${page.url}`, anchorScript);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`无法加载页面 ${page.url}:`, error);
+                    })
+                    .finally(() => {
+                        loadedPages++;
+                        // 检查是否所有页面都已加载
+                        if (loadedPages === pages.length && !found) {
+                            resultsDiv.innerHTML = `<p>未找到与关键词 "${keyword}" 匹配的内容。</p>`;
+                        }
+                    });
+            });
+        } else {
+            resultsDiv.innerHTML = `<p>未输入关键词。</p>`;
+        }
+    </script>
+</body>
+</html>

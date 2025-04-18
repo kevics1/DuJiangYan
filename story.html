@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="renderer" content="webkit"/>
+    <title>青史凿痕-都江堰历史背景-都江堰遗产网</title>
+    <meta name="keywords" content="都江堰历史,都江堰遗产保护,李冰治水"/>
+    <meta name="description"
+          content="都江堰建于公元前256年，是全世界至今仍在使用的最古老的水利工程，展示了古代中国人民高超的科学智慧。"/>
+
+    <!-- 基础库加载 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link href="/skin/css/style.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/skin/css/swiper.min.css"/>
+    <link rel="stylesheet" href="/skin/css/water-sculpture.css">
+    <script src="/skin/js/water-sculpture.js"></script>
+
+    <!-- JS库 -->
+    <script src="/skin/js/jquery.js"></script>
+    <script src="/skin/js/swiper.min.js"></script>
+    <script src="/skin/js/jquery.superslide.2.1.3.js"></script>
+    <script src="/skin/js/js.js"></script>
+
+    <!-- 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/plugins/animation.gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/plugins/debug.addIndicators.min.js"></script>
+
+    <!-- 时间轴和视差效果样式 -->
+    <style>
+        /* ====== 布局调整 ====== */
+        #mybody {
+            width: 100% !important;
+            max-width: 1330px !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+        }
+
+        #myright {
+            width: 100% !important;
+            float: none !important;
+            padding: 0 !important;
+            background: #FFFFFF !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+        }
+
+        #myright .bg1 {
+            width: 100% !important;
+            background-size: 100% 100% !important;
+        }
+
+        #myright .bg2 {
+            width: 100% !important;
+            padding: 20px 25px !important;
+            box-sizing: border-box !important;
+            min-height: auto !important;
+            background: #FFFFFF !important;
+            background-image: none !important;
+        }
+
+        #myright .bg3 {
+            width: 100% !important;
+            background-size: 100% 100% !important;
+        }
+
+        .introduction {
+            max-width: 1000px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+
+        /* ====== 时间轴核心样式 ====== */
+        .timeline-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+            overflow: hidden;
+        }
+
+        .timeline-central-line {
+            position: absolute;
+            width: 6px;
+            background-color: #8c7d59;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            z-index: 1;
+        }
+
+        /* ====== 时间轴项目样式 ====== */
+        .timeline-item {
+            position: relative;
+            width: 100%;
+            margin-bottom: 100px;
+            opacity: 0;
+            min-height: 400px;
+        }
+
+        /* 左右布局样式 - 修改为左对齐 */
+        .timeline-item.left .timeline-content {
+            margin-right: 52%;
+            text-align: left; /* 修改：统一左对齐 */
+        }
+
+        .timeline-item.right .timeline-content {
+            margin-left: 52%;
+            text-align: left; /* 已经是左对齐 */
+        }
+
+        /* 时间节点样式 */
+        .timeline-dot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            left: 50%;
+            top: 20px;
+            margin-left: -15px;
+            border-radius: 50%;
+            background-color: #d9be73;
+            border: 4px solid #8c7d59;
+            z-index: 2;
+        }
+
+        /* 时间年份样式 - 修改位置到对侧 */
+        .timeline-year {
+            position: absolute;
+            width: 200px;
+            top: 20px;
+            color: #8c7d59;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* 修改：当内容在左侧时，年份在右侧 */
+        .timeline-item.left .timeline-year {
+            left: 52%; /* 修改：从右侧改为左侧 */
+            margin-left: 30px; /* 修改：从右侧margin改为左侧margin */
+            text-align: left; /* 修改：统一左对齐 */
+            right: auto; /* 清除右侧对齐 */
+        }
+
+        /* 修改：当内容在右侧时，年份在左侧 */
+        .timeline-item.right .timeline-year {
+            right: 52%; /* 修改：从左侧改为右侧 */
+            margin-right: 30px; /* 修改：从左侧margin改为右侧margin */
+            text-align: right; /* 靠近中轴线 */
+            left: auto; /* 清除左侧对齐 */
+        }
+
+        /* ====== 内容区域样式 ====== */
+        .timeline-content {
+            background-color: #f9f5e9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-content h3 {
+            color: #5a4c2e;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: left; /* 确保标题左对齐 */
+        }
+
+        .timeline-content p {
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-align: left; /* 确保段落左对齐 */
+        }
+
+        /* ====== 图片样式 ====== */
+        .timeline-image {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 6px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .timeline-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 多图片容器 */
+        .timeline-images {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .timeline-images .timeline-image {
+            flex: 1;
+            margin: 0;
+        }
+
+        /* ====== 视差背景样式 ====== */
+        .parallax-bg {
+            height: 400px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-bg .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .parallax-bg h2 {
+            color: #fff;
+            font-size: 42px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* ====== 响应式设计 ====== */
+        @media screen and (max-width: 992px) {
+            .timeline-central-line {
+                left: 40px;
+                margin-left: 0;
+            }
+
+            .timeline-dot {
+                left: 40px;
+                margin-left: 0;
+            }
+
+            .timeline-item.left .timeline-content,
+            .timeline-item.right .timeline-content {
+                margin-left: 80px;
+                margin-right: 20px;
+                text-align: left;
+            }
+
+            /* 移动端年份位置统一 */
+            .timeline-item.left .timeline-year,
+            .timeline-item.right .timeline-year {
+                left: 80px;
+                right: auto;
+                margin-right: 0;
+                margin-left: 0;
+                text-align: left;
+                top: -30px; /* 在移动端时，年份显示在内容上方 */
+            }
+
+            .parallax-bg h2 {
+                font-size: 32px;
+            }
+
+            .timeline-images {
+                flex-direction: column;
+            }
+
+            .timeline-images .timeline-image {
+                height: 200px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .bg2 {
+                padding: 0 15px !important;
+            }
+
+            .timeline-central-line {
+                left: 20px;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-item.left .timeline-content,
+            .timeline-item.right .timeline-content {
+                margin-left: 50px;
+                margin-right: 10px;
+            }
+
+            .timeline-item.left .timeline-year,
+            .timeline-item.right .timeline-year {
+                left: 50px;
+                font-size: 24px;
+                top: -30px; /* 在移动端时，年份显示在内容上方 */
+            }
+
+            .parallax-bg {
+                height: 300px;
+            }
+
+            .parallax-bg h2 {
+                font-size: 28px;
+            }
+        }
+
+        /* 美化回到顶部按钮 */
+        #gotop {
+            width: 50px !important;
+            height: 50px !important;
+            background: rgba(90, 76, 46, 0.8) !important;
+            position: fixed !important;
+            right: 20px !important;
+            bottom: 20px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 999 !important;
+            transition: background-color 0.3s ease !important;
+        }
+
+        #gotop:hover {
+            background: rgba(217, 190, 115, 0.9) !important;
+        }
+
+        #gotop:before {
+            content: "";
+            width: 15px;
+            height: 15px;
+            border-top: 3px solid #fff;
+            border-left: 3px solid #fff;
+            transform: rotate(45deg) translate(2px, 2px);
+            display: block;
+        }
+
+        #gotop span {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 回到顶部按钮 -->
+<div id="gotop"><span>回到顶部</span></div>
+
+<!-- 页头区域 -->
+<div id="header">
+    <dl id="logosearch">
+        <dt>
+            <img id="logo" src="/static/upload/image/logo/mainlogo.png" width="" height="80" />
+        </dt>
+        <dd>
+            <form id="searchForm">
+                <input type="text" name="keyword" id="sipt" placeholder="请输入关键词" />
+                <input type="submit" id="sbtn" value="搜索" />
+            </form>
+            <img src="/skin/images/open.png" width="21" height="21" class="mobNav" xf="/skin/images/close.png"
+                 alt="菜单"/>
+        </dd>
+    </dl>
+</div>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // 阻止默认提交行为
+        const keyword = document.getElementById('sipt').value.trim();
+        if (keyword) {
+            // 跳转到结果页面并传递关键词
+            window.location.href = `results.html?keyword=${encodeURIComponent(keyword)}`;
+        }
+    });
+</script>
+
+<!-- 导航菜单 -->
+<div id="nav">
+    <ul>
+        <li><a href="home.html" class="navlink ztzt">千载堰门·云启</a></li>
+        <span><img src="/skin/images/navo.png" alt="分隔符"></span>
+        <li><a href="2d.html" class="navlink ztzt">舆图绘世</a></li>
+        <span><img src="/skin/images/navo.png" alt="分隔符"></span>
+        <li><a href="3d古迹显示/index2.html" target="_blank" class="navlink ztzt">浮空幻境</a></li>
+        <span><img src="/skin/images/navo.png" alt="分隔符"></span>
+        <li><a href="story.html" class="navlink ztzt curnav">青史凿痕</a></li>
+    </ul>
+</div>
+
+<!-- 空白间隔 -->
+<table>
+    <tbody>
+    <tr class="firstRow">
+        <td width="100%" valign="top" height="10px"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 面包屑导航 -->
+<div id="location">
+    <span>当前位置：</span>
+    <img src="/skin/images/l.png" width="18" height="15" alt="位置"/>
+    <a href="/">首页</a> &gt;&gt;
+    <a href="/story.html">青史凿痕</a> &gt;&gt;
+    <a href="#">都江堰历史背景</a>
+</div>
+
+<!-- 主体内容区域 - 全宽时间轴 -->
+<div id="mybody">
+    <div id="myright">
+        <div class="bg1"></div>
+        <div class="bg2">
+            <!-- 介绍性段落 -->
+            <div class="introduction">
+                <h1 style="text-align:center; margin-bottom:30px; color:#5a4c2e; font-family:'微软雅黑', sans-serif; font-size:32px;">都江堰的历史印记</h1>
+                <p style="line-height:1.8; text-indent:2em; margin-bottom:20px; font-family:'微软雅黑', sans-serif;">
+                    都江堰，这座始建于公元前256年的水利工程，见证了中国两千余年的历史变迁。作为世界文化遗产，它展示了古代中国人民高超的科学智慧和非凡的创造力，至今仍在发挥着重要的灌溉和防洪作用。让我们跟随时间的脚步，一同探寻都江堰的历史足迹。
+                </p>
+            </div>
+
+            <!-- 第一个视差背景 -->
+            <div class="parallax-bg"
+                 style="background-image: url('http://www.kepu.gov.cn/studytour/pic/2021-11/04/1759002_eaeae21c-15df-472d-a690-43deef19ea12.png');">
+                <div class="overlay">
+                    <h2>穿越时空的水利奇迹</h2>
+                </div>
+            </div>
+
+            <!-- 时间轴开始 -->
+            <div class="timeline-container">
+                <div class="timeline-central-line"></div>
+
+                <!-- 修建背景 -->
+                <div class="timeline-item left" id="scene1">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">修建背景<br>（公元前316年-276年）</div>
+                    <div class="timeline-content">
+                        <h3>秦国统治下的巴蜀</h3>
+                        <p>
+                            战国时期，秦国通过商鞅变法迅速崛起，成为国富兵强的强国，渴望统一中国。为实现这一目标，秦国需要稳固的后方基地，于是将目光投向巴蜀地区。秦惠王利用巴蜀内部矛盾，最终在公元前316年灭蜀。</p>
+                        <p>
+                            蜀国灭亡后，秦国在蜀地推行封建制度，加速了当地社会转型。公元前285年，秦昭王废蜀侯，"但置蜀守"，彻底废除分封制而代之以郡县制。此时，蜀地人民得到了休生养息，生产有了发展，政局稳定。</p>
+                        <p>
+                            都江堰修筑之前，成都平原的农业已有一定的基础。《华阳国志·蜀志》提到："后有王曰杜宇，教民务农，一号杜主……移治郫邑，或治瞿上"。这为都江堰的兴建提供了雄厚的物质基础。</p>
+                    </div>
+                </div>
+
+                <!-- 秦朝初建 -->
+                <div class="timeline-item right" id="scene2">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">公元前276年-251年</div>
+                    <div class="timeline-content">
+                        <h3>秦朝初建都江堰</h3>
+                        <div class="timeline-image">
+                            <img src="/StoryImage/1.webp" alt="都江堰古代修建场景再现">
+                        </div>
+                        <p>
+                            秦灭巴蜀是其统一战略的重要一步，秦昭王后期（约公元前276年至251年），蜀郡守李冰总结了前人治水的经验，组织岷江两岸人民，修建都江堰。出于军事目的创建的都江堰，一是解除岷江洪水威胁，保障蜀地作为战略后方的安全；二是开通水路，便于顺流而下攻打楚国。</p>
+                        <p>
+                            李冰注重实地考察，根据岷江地形特点，精心设计了都江堰水利工程。首先"凿离堆，避沫水之害"，将瀚山伸向灌县城西的一段余脉凿开引水口。二是"壅江作"，修筑都江堰分水堤，使表层水自右向左进入引水渠；底层水挟带泥沙仍奔向正流。三是"穿二江成都之中"，即开凿两大干渠，将水引入成都平原。</p>
+                    </div>
+                </div>
+
+                <!-- 西汉时期 -->
+                <div class="timeline-item left" id="scene3">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">公元前2世纪-公元前1世纪</div>
+                    <div class="timeline-content">
+                        <h3>西汉时期扩展</h3>
+                        <div class="timeline-image">
+                            <img src="/StoryImage/2.webp" alt="汉代都江堰扩展场景">
+                        </div>
+                        <p>
+                            战国时期修建的都江堰水利工程，造福了成都平原大部分地区，而位于成都平原西北部的湔江河谷一带，仍没有被纳入都江堰灌溉区。西汉时期，蜀中大兴水利，将水利工程体系拓展至湔江流域，都江堰灌区在成都平原得到首次扩大。</p>
+                        <p>
+                            文翁（公元前187—110年）担任蜀郡守期间，发现繁县（今四川彭州市）因湔江上游皂角岩垮塌导致旱涝灾害频发。他赶往考察后，组织人力物力打通皂角岩，治理湔江，使彭州成了丰饶富庶之乡。</p>
+                        <p>
+                            汉武帝元鼎六年（公元前111年），司马迁奉命出使西南时，实地考察了都江堰。他在《史记·河渠书》中记载："于蜀，蜀守冰凿离碓，辟沫水之害，穿二江成都之中。此渠皆可行舟，有余则用溉浸，百姓飨其利。"</p>
+                    </div>
+                </div>
+
+                <!-- 诸葛亮设兵护堰 -->
+                <div class="timeline-item right" id="scene4">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">公元228年</div>
+                    <div class="timeline-content">
+                        <h3>诸葛亮设兵护堰</h3>
+                        <div class="timeline-image">
+                            <img src="/StoryImage/3.png" alt="诸葛亮设兵护堰场景">
+                        </div>
+                        <p>
+                            蜀汉建兴六年（公元228年），诸葛亮北征，认识到"此堰农本，国之所资"（都江堰是农业之根本、国家经济发展的重要支柱）。于是，诸葛亮颁布《九里堤护堤令》:"按九里堤捍护都城，用防水患，今修筑竣，告示居民，勿许侵占损坏，有犯，治以严法，令即遵行"。这是目前所见的最早的防洪法令原件。</p>
+                        <p>除此之外，诸葛亮还专门设置了堰官，主管都江堰的维护，并征集兵丁1200人常年驻守，对其进行经常性的管理维护，开辟了以后历代设专职水利官员管理都江堰的先河。堰官直接受朝廷管辖,
+                            不受郡、县地方政府干扰。</p>
+                    </div>
+                </div>
+
+                <!-- 唐代逐渐完善 -->
+                <div class="timeline-item left" id="scene5">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">唐代</div>
+                    <div class="timeline-content">
+                        <h3>逐渐完善的水利系统</h3>
+                        <div class="timeline-image">
+                            <img src="/StoryImage/4.jpg" alt="唐代都江堰完善">
+                        </div>
+                        <p>
+                            唐代初期，岷江流域频发地质灾害，山崩导致沱江进水口断面急剧收缩，形成狭窄的"百丈渠"。原内江泄水通道难以承载洪水期的巨大水量，致使宝瓶口进水量激增，严重威胁成都平原安全。</p>
+                        <p>
+                            为解决这一问题，龙朔年间（661-663年），一位官至侍郎的官员主持修建了侍郎堰（即今飞沙堰前身），作为内江右岸的旁侧溢洪道。该工程通过分流洪水、调控宝瓶口进水量，有效缓解了洪涝压力。据《新唐书·地理志》记载，"有侍郎堰，其东百丈堰，引江水以溉彭益田，龙朔中筑。"</p>
+                        <p>
+                            其后因不断的地质灾害，百丈渠最终逐渐封闭，为解决内江总干渠北面灵岩山前沿原百丈渠灌区的农田灌溉问题，修建了导江堰支渠，宋"永康军岁治都江堰"时，将导江堰支渠两岸种植杨柳树以保护渠堤，故改称杨柳河。</p>
+                    </div>
+                </div>
+
+                <!-- 宋朝成熟期 -->
+                <div class="timeline-item right" id="scene6">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">两宋时期</div>
+                    <div class="timeline-content">
+                        <h3>成熟期的都江堰</h3>
+                        <p>
+                            两宋时期，都江堰的主体工程包括象鼻、离堆、侍郎堰、支水和摄水等，其中"象鼻"指的就是具有分水引水功能的鱼嘴，"离堆"即进水的宝瓶口，"侍郎堰"在此时的功能相当于泄洪和排沙的飞沙堰，"支水"和"摄水"等辅助设施大致相当于导流堤、拦河低堰等。拥有分水、导流、引水和溢洪排沙综合功能的工程体系的形成，标志着都江堰进入了成熟期。</p>
+                        <p>
+                            成熟期的都江堰内江灌区共分出4条干渠，灌溉着成都府，蜀、彭、绵、汉、邛5州，灌概面积超过200万亩。都江堰的管理也更加完善，形成了稽查、水政和工程三个互相制约的管理体系。</p>
+                        <p>
+                            宋代还确立了"穿淘"岁修制度，规定每年冬春枯水期进行断流岁修。岁修时，修整堰体，深淘河道，淘滩深度以挖到埋设在滩底的石马为准，堰体高度与对岸岩壁上的水则相齐。这种制度确保了都江堰的持续高效运行。</p>
+                    </div>
+                </div>
+
+                <!-- 元朝大修 -->
+                <div class="timeline-item left" id="scene7">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">公元1334年-1336年</div>
+                    <div class="timeline-content">
+                        <h3>元朝的都江堰大修工程</h3>
+                        <div class="timeline-images">
+                            <div class="timeline-image">
+                                <img src="StoryImage/5.jpg" alt="元朝都江堰修缮场景1">
+                            </div>
+                            <div class="timeline-image">
+                                <img src="StoryImage/6.jpg" alt="元朝都江堰修缮场景2">
+                            </div>
+                        </div>
+                        <p>
+                            元朝顺帝至元元年（公元1335年），四川行中书省召开会议，讨论大修都江堰水利枢纽事宜。率先提出建议的是一位名叫吉当普的蒙古族官员，当时在成都任"四川肃政廉访司事"一职。</p>
+                        <p>
+                            吉当普巡行都江堰上下游，"得要害之处三十有二"，他找到灌州判官张弘，与他商议："都江堰不难根治，最要害的江段只有三十二处，两岸堤防若甃之以石，则岁役可罢，民力可苏矣"。</p>
+                        <p>
+                            整个工程动用石工七百人、金工七百人，木工二百五十人，小工三千九百人，合计五千五百五十人。工程耗费粮食一千余石，石材百万余方，石灰六万余斤，桐油三万余斤，铁六万五千斤，麻五千斤。元朝大修都江堰之役，使得工程更加坚固耐用，"纺绩之处"的出现，表明当年依靠水力推动的机械，不光有水磨、水舂，甚至还有用于纺织的设施。</p>
+                    </div>
+                </div>
+
+                <!-- 第三个视差背景 -->
+                <div class="parallax-bg">
+                    <div class="overlay" style="z-index: 3; position: relative;">
+                        <h2>世界文化遗产的光辉</h2>
+                    </div>
+                    <img src="http://www.kepu.gov.cn/studytour/pic/2021-11/04/1759002_721d718b-7311-4a83-9bbd-d2005c63213e.png" 
+                         alt="世界文化遗产的光辉" 
+                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; border: 5px solid #8c7d59; box-sizing: border-box;">
+                </div>
+
+                <!-- 明清时期 -->
+                <div class="timeline-item right" id="scene8">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">明清时期</div>
+                    <div class="timeline-content">
+                        <h3>稳定期的都江堰</h3>
+                        <p>
+                            明代时期，岁修制度得到强化，每年冬春枯水期都会对都江堰进行断流岁修，严格遵循既定标准。明代施干祥建造的铁牛鱼嘴，尝试用更坚固的材料替代传统的竹笼结构，以减少岁修工程量，提高工程的耐久性。明代都江堰灌区的灌溉面积超过300万亩，为成都平原提供了坚实的水利保障。</p>
+                        <p>
+                            清代时期，都江堰的管理体制进一步完善，设立了水利府等专门机构。尽管遭受了多次灾害，如康熙四十七年(1708年)堰塞湖溃决和1933年岷江上游海子再次溃决，都江堰都能迅速得以重建。</p>
+                        <p>
+                            清光绪年间，四川总督丁宝桢修建了浆砌条石鱼嘴，取代了之前的铁牛鱼嘴，极大地增强了鱼嘴的稳固性，减少了水流对工程的冲刷破坏。1936年，用浆砌条石重建的鱼嘴再次加固，确保了都江堰主体工程的长期稳定。至清末，都江堰灌区的灌溉面积达到280万亩。</p>
+                    </div>
+                </div>
+
+                <!-- 近现代 -->
+                <div class="timeline-item left" id="scene9">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">近现代</div>
+                    <div class="timeline-content">
+                        <h3>科学保护与世界遗产</h3>
+                        <div class="timeline-image">
+                            <img src="https://p3.itc.cn/q_70/images03/20221220/69513494a0124ef89b636ca4a1489cef.jpeg"
+                                 alt="现代都江堰景观">
+                        </div>
+                        <p>2000年，都江堰与青城山被联合列入《世界文化遗产名录》，成为中国古代科技成就的杰出代表。</p>
+                        <p>
+                            2008年汶川地震后，都江堰进行了全面修缮和加固工程，采用现代科技手段与传统工艺相结合，保证了这一古老水利工程的安全与功能。</p>
+                        <p>
+                            如今，都江堰不仅是重要的水利设施，更是珍贵的文化遗产和旅游景点，每年吸引数百万游客前来参观学习。</p>
+                    </div>
+                </div>
+
+                <!-- 传承与未来 -->
+                <div class="timeline-item right" id="scene10">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">传承与未来</div>
+                    <div class="timeline-content">
+                        <h3>智慧结晶的永恒生命力</h3>
+                        <div class="timeline-image">
+                            <img src="http://paper.people.com.cn/zgcsb/images/2023-10/16/12/zgcsb2023101612p17_b.jpg"
+                                 alt="都江堰现代保护">
+                        </div>
+                        <p>
+                            作为人类水利史上的奇迹，都江堰历经2200多年依然发挥着巨大作用，灌溉着成都平原近百万公顷良田，被誉为"世界上年代最久、唯一留存、以无坝引水为特征的宏大水利工程"。</p>
+                        <p>
+                            新时代的水利工程师们正在研究都江堰的工程奥秘，将古代智慧与现代科技相结合，为全球水利工程提供借鉴。</p>
+                        <p>都江堰的故事，是中华文明生生不息的象征，也是人与自然和谐共处的典范。</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 时间轴结束 -->
+
+            <!-- 结语 -->
+            <div style="margin:50px auto;padding:20px;background:#f9f5e9;border-radius:10px;max-width:1000px;">
+                <h3 style="text-align:center;margin-bottom:20px;color:#5a4c2e;">千年古堰 智慧永传</h3>
+                <p style="line-height:1.8;text-indent:2em;">
+                    都江堰水利工程凝聚了古代中国人民的智慧和汗水，历经两千余年风雨而不倒，功效愈加彰显。它不仅是一项伟大的工程，更是中华民族的智慧结晶和珍贵文化遗产。通过科学保护与合理利用，让这一世界文化遗产焕发新的生机与活力，继续为人类造福。
+                </p>
+            </div>
+        </div>
+        <div class="bg3"></div>
+    </div>
+</div>
+
+<div id="footer">
+    <ul>
+        <li><font style="font-size: 16px;font-weight: bold;">中国计算机设计大赛2025·4C大赛</font></li>
+    </ul>
+</div>
+
+<div id="bottom">
+    <div class="ftbg"></div>
+</div>
+
+<!-- 添加图片查看器样式 -->
+<style>
+    /* 图片查看器样式 */
+    .image-viewer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-viewer.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .image-viewer img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .image-viewer.active img {
+        transform: scale(1);
+    }
+
+    .image-viewer-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    /* 时间轴导航样式 */
+    .timeline-nav {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgba(249, 245, 233, 0.8);
+        padding: 10px 5px;
+        border-radius: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-nav-item {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #8c7d59;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .timeline-nav-item:hover, .timeline-nav-item.active {
+        background-color: #d9be73;
+        transform: scale(1.3);
+    }
+
+    .timeline-nav-tooltip {
+        position: absolute;
+        right: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #5a4c2e;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .timeline-nav-item:hover .timeline-nav-tooltip {
+        opacity: 1;
+    }
+
+    /* 交互式元素样式 */
+    .timeline-content {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .timeline-dot {
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .timeline-item:hover .timeline-dot {
+        transform: scale(1.2);
+        background-color: #e6c980;
+    }
+
+    /* 响应式调整 */
+    @media screen and (max-width: 768px) {
+        .timeline-nav {
+            display: none;
+        }
+    }
+</style>
+
+<!-- 图片查看器HTML结构 -->
+<div class="image-viewer">
+    <div class="image-viewer-close">×</div>
+    <img src="" alt="放大查看">
+</div>
+
+<!-- 时间轴导航 -->
+<div class="timeline-nav">
+    <!-- 导航点将通过JavaScript动态生成 -->
+</div>
+
+<!-- ScrollMagic动画控制脚本 -->
+<script>
+    $(document).ready(function () {
+        // 初始化ScrollMagic控制器
+        var controller = new ScrollMagic.Controller();
+
+        // 时间轴项目动画 - 增强版
+        $('.timeline-item').each(function (index) {
+            var tl = gsap.timeline();
+            var item = $(this);
+            var itemId = item.attr('id');
+            var yearText = item.find('.timeline-year').text();
+
+            // 为每个时间点添加导航点
+            $('.timeline-nav').append('<div class="timeline-nav-item" data-target="#' + itemId + '"><div class="timeline-nav-tooltip">' + yearText + '</div></div>');
+
+            // 增强动画效果
+            tl.fromTo(item,
+                {opacity: 0, y: 50},
+                {opacity: 1, y: 0, duration: 0.8}
+            );
+
+            // 为时间点内的元素添加序列动画
+            tl.fromTo(item.find('.timeline-dot'),
+                {scale: 0, opacity: 0},
+                {scale: 1, opacity: 1, duration: 0.4},
+                "-=0.4"
+            );
+
+            tl.fromTo(item.find('.timeline-year'),
+                {opacity: 0, x: item.hasClass('left') ? -20 : 20},
+                {opacity: 1, x: 0, duration: 0.4},
+                "-=0.2"
+            );
+
+            tl.fromTo(item.find('.timeline-content'),
+                {opacity: 0, y: 20},
+                {opacity: 1, y: 0, duration: 0.6},
+                "-=0.2"
+            );
+
+            // 创建场景
+            var scene = new ScrollMagic.Scene({
+                triggerElement: this,
+                triggerHook: 0.8,
+                reverse: false
+            })
+                .setTween(tl)
+                .addTo(controller);
+
+            // 监听滚动位置，更新导航状态
+            new ScrollMagic.Scene({
+                triggerElement: this,
+                triggerHook: 0.5,
+                duration: '80%'
+            })
+                .on("enter", function() {
+                    $('.timeline-nav-item').removeClass('active');
+                    $('.timeline-nav-item[data-target="#' + itemId + '"]').addClass('active');
+                })
+                .addTo(controller);
+        });
+
+        // 视差背景动画效果 - 增强版
+        $('.parallax-bg').each(function () {
+            var parallaxTl = gsap.timeline();
+            var bg = $(this);
+
+            parallaxTl.fromTo(bg.find('h2'),
+                {opacity: 0, y: 30},
+                {opacity: 1, y: 0, duration: 1}
+            );
+
+            // 添加视差滚动效果
+            new ScrollMagic.Scene({
+                triggerElement: this,
+                triggerHook: 0.2,
+                duration: '100%'
+            })
+                .setTween(parallaxTl)
+                .addTo(controller);
+
+            // 添加背景视差效果
+            new ScrollMagic.Scene({
+                triggerElement: this,
+                triggerHook: 0.5,
+                duration: '100%'
+            })
+                .setTween(gsap.to(bg, {
+                    backgroundPosition: "50% 30%",
+                    ease: "none"
+                }))
+                .addTo(controller);
+        });
+
+        // 图片动画效果 - 增强版
+        $('.timeline-image').each(function () {
+            var imgTl = gsap.timeline();
+            var img = $(this);
+
+            imgTl.fromTo(img.find('img'),
+                {scale: 1.1, opacity: 0},
+                {scale: 1, opacity: 1, duration: 0.8}
+            );
+
+            new ScrollMagic.Scene({
+                triggerElement: this,
+                triggerHook: 0.8,
+                reverse: false
+            })
+                .setTween(imgTl)
+                .addTo(controller);
+
+            // 添加点击放大功能
+            img.css('cursor', 'pointer');
+            img.on('click', function() {
+                var imgSrc = $(this).find('img').attr('src');
+                var imgAlt = $(this).find('img').attr('alt');
+                $('.image-viewer img').attr('src', imgSrc).attr('alt', imgAlt);
+                $('.image-viewer').addClass('active');
+                $('body').css('overflow', 'hidden'); // 防止背景滚动
+            });
+        });
+
+        // 图片查看器关闭功能
+        $('.image-viewer-close, .image-viewer').on('click', function(e) {
+            if (e.target === this || $(e.target).hasClass('image-viewer-close')) {
+                $('.image-viewer').removeClass('active');
+                $('body').css('overflow', ''); // 恢复滚动
+            }
+        });
+
+        // 导航点点击事件 - 平滑滚动
+        $('.timeline-nav-item').on('click', function() {
+            var target = $($(this).data('target'));
+            $('html, body').animate({
+                scrollTop: target.offset().top - 100
+            }, 800);
+        });
+
+        // 触摸设备优化
+        if ('ontouchstart' in window) {
+            // 为移动设备添加触摸反馈
+            $('.timeline-content, .timeline-dot, .timeline-nav-item').on('touchstart', function() {
+                $(this).addClass('touch-active');
+            }).on('touchend touchcancel', function() {
+                $(this).removeClass('touch-active');
+            });
+        }
+
+        // 添加键盘导航支持
+        $(document).keydown(function(e) {
+            // ESC键关闭图片查看器
+            if (e.keyCode === 27 && $('.image-viewer').hasClass('active')) {
+                $('.image-viewer').removeClass('active');
+                $('body').css('overflow', '');
+            }
+        });
+
+        // 替换原有的回到顶部功能，添加滑轮滚动停止动画
+        var isScrollingToTop = false;
+
+        // 回到顶部功能
+        $("#gotop").click(function() {
+            isScrollingToTop = true;
+            
+            $("html, body").animate(
+                { scrollTop: 0 }, 
+                {
+                    duration: 500, 
+                    // 动画完成时重置状态
+                    complete: function() {
+                        isScrollingToTop = false;
+                    }
+                }
+            );
+            
+            return false;
+        });
+        
+        // 当用户滚动鼠标滑轮时停止动画
+        $(window).on('wheel mousewheel DOMMouseScroll', function() {
+            if (isScrollingToTop) {
+                isScrollingToTop = false;
+                $("html, body").stop(); // 立即停止动画
+            }
+        });
+        
+        // 当用户按键时也停止动画（例如：PageUp, PageDown, 上下箭头等）
+        $(document).on('keydown', function(e) {
+            if (isScrollingToTop && (e.which == 33 || e.which == 34 || e.which == 38 || e.which == 40)) {
+                isScrollingToTop = false;
+                $("html, body").stop(); // 立即停止动画
+            }
+        });
+        
+        // 添加滚动监听以显示/隐藏按钮
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 300) {
+                $('#gotop').addClass('visible');
+            } else {
+                $('#gotop').removeClass('visible');
+            }
+        });
+        
+        // 初始检查
+        if ($(window).scrollTop() > 300) {
+            $('#gotop').addClass('visible');
+        }
+    });
+</script>
+
+    <!-- 水流雕刻动画容器 -->
+    <div id="water-sculpture">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="50%" text-anchor="middle" dy=".35em" class="sculpture-text">
+                都江堰
+            </text>
+        </svg>
+    </div>
+</body>
+</html>
