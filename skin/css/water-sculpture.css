@@ -1,0 +1,39 @@
+/* 水流雕刻动画样式 */
+#water-sculpture {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 162, 232, 0.8); /* 水流背景颜色 */
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    animation: fade-out 1s ease-out forwards; /* 动画时间缩短为 1s */
+}
+
+.sculpture-text {
+    font-size: 5rem;
+    font-family: 'KaiTi', serif; /* 使用楷体以契合中国传统文化 */
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: draw-text 1s ease-out forwards, fade-out 1s ease-out 0.5s forwards; /* 动画时间缩短为 1s */
+}
+
+/* 绘制文字动画 */
+@keyframes draw-text {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* 淡出动画 */
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
